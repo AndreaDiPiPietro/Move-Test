@@ -10,7 +10,7 @@ public class PathProcedural {
     [SerializeField, HideInInspector]
     bool isClosed;
     [SerializeField, HideInInspector]
-    bool autoSetControlPoints;
+    bool autoSetControlPoints = true;
 
     PathCreator creator;
 
@@ -22,10 +22,7 @@ public class PathProcedural {
             centre+(Vector3.left+Vector3.forward)*.5f,
             centre + (Vector3.right+Vector3.back)*.5f,
             centre + Vector3.right*/
-            centre,
-            centre+ Vector3.left,
-            centre,
-            //centre + Vector3.right,
+            centre
             
         };
     }
@@ -109,9 +106,10 @@ public class PathProcedural {
 
     public void AddSegment(Vector3 anchorPos)
     {
+        points.Add(anchorPos);
         points.Add(points[points.Count - 1] * 2 - points[points.Count - 2]);
         points.Add((points[points.Count - 1] + anchorPos) * .5f);
-        points.Add(anchorPos);
+
 
         if (autoSetControlPoints)
         {
