@@ -11,6 +11,7 @@ public class RoadSpawn : MonoBehaviour {
     List<GameObject> anchorList;
     LineRenderer lineRenderer;
     PathCreator pathCreator;
+    RoadCreator3D roadCreator;
 
     public void cleanList()
     {
@@ -21,12 +22,13 @@ public class RoadSpawn : MonoBehaviour {
     {
         anchorList = new List<GameObject>();
         lineRenderer = GetComponent<LineRenderer>();
-        pathCreator = GetComponent<PathCreator>();          
+        pathCreator = GetComponent<PathCreator>();
+        roadCreator = GetComponent<RoadCreator3D>();
     }
 
     public void SpawnAnchor()
     {
-        lineRenderer.positionCount += 1;
+        
         var cur = Instantiate(anchorPoint,transform);
         anchorList.Add(cur);
 
@@ -41,7 +43,7 @@ public class RoadSpawn : MonoBehaviour {
 
     IEnumerator FirstSpawn()
     {
-        if (transform.GetChild(0).GetComponent<DragMovement>().IsDragging)
+        if (transform.GetChild(1).GetComponent<DragMovement>().IsDragging)
         {
             yield return new WaitForFixedUpdate();
         }
@@ -60,11 +62,18 @@ public class RoadSpawn : MonoBehaviour {
             SpawnAnchor();
         }
 
-        for (int j = 0 ;  j < anchorList.Count; j++)
+        if (anchorList.Count > 1)
         {
-            Vector3 adjustedPos = new Vector3(anchorList[j].transform.position.x, 0.3f, anchorList[j].transform.position.z);
-            lineRenderer.SetPosition(j, adjustedPos);
-            pathCreator.path.MovePoint(j*3, adjustedPos);
+            for (int j = 0; j < anchorList.Count; j++)
+            {
+                //Debug.Log(" j è uguale a " + j * 3);
+                //Debug.Log("la lista di punti è lunga" + (pathCreator.path.points.Count-1));
+                Vector3 adjustedPos = new Vector3(anchorList[j].transform.position.x, 0.3f, anchorList[j].transform.position.z);
+                pathCreator.path.MovePoint(j * 3, adjustedPos);
+                roadCreator.UpdateRoad();
+
+            }
         }
+
     }
 }
