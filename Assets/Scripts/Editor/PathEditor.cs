@@ -20,8 +20,19 @@ public class PathEditor : Editor {
     const float segmentSelectDistanceThreshold = .1f;
     int selectedSegmentIndex = -1;
 
+    private void OnEnable() // quando l'editor viene abilitato
+    {
+
+        creator = (PathCreator)target;
+        if (creator.path == null) // se non c'è nessun path
+        {
+            creator.CreatePath(Vector3.zero); //crea un nuovo path  CAMBIATO////////////////////////////////////////////////////////////////
+        }
+    }
+
     public override void OnInspectorGUI()
     {
+     
         base.OnInspectorGUI();
 
         EditorGUI.BeginChangeCheck();
@@ -65,7 +76,7 @@ public class PathEditor : Editor {
         //mousePos = mousePos - creator.transform.position;
         mousePos.y = 0;
 
-        if (guiEvent.type == EventType.MouseDown && guiEvent.button == 0 && guiEvent.control) //crea un punto in più, crea un segmento di strada
+        /*if (guiEvent.type == EventType.MouseDown && guiEvent.button == 0 && guiEvent.control) //crea un punto in più, crea un segmento di strada
         {
             if (selectedSegmentIndex != -1)
             {
@@ -77,9 +88,9 @@ public class PathEditor : Editor {
                 Undo.RecordObject(creator, "Add Segment");
                 Path.AddSegment(mousePos);
             }
-        }
+        }*/
         
-        if(guiEvent.type == EventType.MouseDown && guiEvent.button == 1)  //cancella un segmento
+        /*if(guiEvent.type == EventType.MouseDown && guiEvent.button == 1)  //cancella un segmento
         {
             float minDstToAnchor = creator.anchorDiameter * .5f; // una threshold che gestisce la distanza minima per selezionare un punto
             int closestAnchorIndex = -1; //un indice invalido all'inizio
@@ -99,9 +110,9 @@ public class PathEditor : Editor {
                 Undo.RecordObject(creator, "Delete segment");
                 Path.DeleteSegment(closestAnchorIndex);
             }
-        }
+        }*/
 
-        if (guiEvent.type == EventType.MouseMove)    //vede se è abbastnza vicino a un segmento
+        /*if (guiEvent.type == EventType.MouseMove)    //vede se è abbastnza vicino a un segmento
         {
             float minDstToSegment = segmentSelectDistanceThreshold;
             int newSelectedSegmentIndex = -1;
@@ -122,14 +133,13 @@ public class PathEditor : Editor {
                 selectedSegmentIndex = newSelectedSegmentIndex;
                 HandleUtility.Repaint();
             }
-        }
+        }*/
 
         HandleUtility.AddDefaultControl(0);
     }
 
     void Draw()
     {
-
         for (int i = 0; i < Path.NumSegments; i++)
         {
             Vector3[] points = Path.GetPointsInSegment(i);
@@ -156,18 +166,50 @@ public class PathEditor : Editor {
                 if (Path[i] != newPos) //se la posizione è cambiata
                 {
                     Undo.RecordObject(creator, "Move point"); //facciamo ricordare all'editor il cambio, per poter usare l'Undo
-                    Path.MovePoint(i, newPos);
+                    //Path.MovePoint(i, newPos);
                 }
             }
         }
     }
 
-    private void OnEnable() // quando l'editor viene abilitato
+    /*private void OnEnable() // quando l'editor viene abilitato
     {
         creator = (PathCreator)target;
         if (creator.path == null) // se non c'è nessun path
         {
             creator.CreatePath(Vector3.zero); //crea un nuovo path  CAMBIATO////////////////////////////////////////////////////////////////
         }
-    }
+    }*/
+
+    /*public override void OnInspectorGUI()
+    {
+        base.OnInspectorGUI();
+
+        EditorGUI.BeginChangeCheck();
+
+        if (GUILayout.Button("Create new"))
+        {
+            Undo.RecordObject(creator, "Create new");
+            creator.CreatePath(Vector3.zero); // CAMBIATO //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        }
+
+        bool isClosed = GUILayout.Toggle(Path.IsClosed, "Closed");
+        if (isClosed != Path.IsClosed)
+        {
+            Undo.RecordObject(creator, "Toggle closed");
+            Path.IsClosed = isClosed;
+        }
+
+        bool autoSetControlPoints = GUILayout.Toggle(Path.AutoSetControlPoints, "Auto Set Control Points");
+        if (autoSetControlPoints != Path.AutoSetControlPoints)
+        {
+            Undo.RecordObject(creator, "Toggle auto set controls");
+            Path.AutoSetControlPoints = autoSetControlPoints;
+        }
+
+        if (EditorGUI.EndChangeCheck())
+        {
+            SceneView.RepaintAll();
+        }
+    }*/
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class PathProcedural {
 
-    [SerializeField, HideInInspector]
+
     public List<Vector3> points;
     [SerializeField, HideInInspector]
     bool isClosed;
@@ -223,6 +223,7 @@ public class PathProcedural {
                 {
                     float overshootDst = dstSinceLastEvenPoint - spacing;
                     Vector3 newEvenlySpacedPoint = pointOnCurve + (previousPoint - pointOnCurve).normalized * overshootDst;
+                    newEvenlySpacedPoint.y = 0;
                     evenlySpacedPoints.Add(newEvenlySpacedPoint);
                     dstSinceLastEvenPoint = overshootDst;
                     previousPoint = newEvenlySpacedPoint;
@@ -239,11 +240,14 @@ public class PathProcedural {
 
     void AutoSetAllAffectedControlPoints(int updatedAnchorIndex)
     {
-        for (int i = updatedAnchorIndex-3; i <= updatedAnchorIndex +3; i+=3)
+        if (points.Count > 4)
         {
-            if (i >= 0 && i < points.Count || isClosed)
+            for (int i = updatedAnchorIndex - 3; i <= updatedAnchorIndex + 3; i += 3)
             {
-                AutoSetAnchorControlPoints(LoopIndex(i));
+                if (i >= 0 && i < points.Count || isClosed)
+                {
+                    AutoSetAnchorControlPoints(LoopIndex(i));
+                }
             }
         }
 
@@ -252,11 +256,12 @@ public class PathProcedural {
 
     void AutoSetAllControlPoints()
     {
-        for (int i = 0; i < points.Count; i+=3)
+
+        for (int i = 0; i < points.Count; i += 3)
         {
             AutoSetAnchorControlPoints(i);
         }
-
+        
         AutoSetStartAndEndControls();
     }
 
@@ -265,19 +270,18 @@ public class PathProcedural {
         Vector3 anchorPos = points[anchorIndex];
         Vector3 dir = Vector3.zero;
         float[] neighbourDistances = new float[2];
-
         if (anchorIndex - 3 >= 0 || isClosed)
         {
             Vector3 offset = points[LoopIndex(anchorIndex - 3)] - anchorPos;
             dir += offset.normalized;
             neighbourDistances[0] = offset.magnitude;
         }
-		if (anchorIndex + 3 >= 0 || isClosed)
-		{
+        if (anchorIndex + 3 >= 0 || isClosed)
+        {
             Vector3 offset = points[LoopIndex(anchorIndex + 3)] - anchorPos;
-			dir -= offset.normalized;
-			neighbourDistances[1] = -offset.magnitude;
-		}
+            dir -= offset.normalized;
+            neighbourDistances[1] = -offset.magnitude;
+        }
 
         dir.Normalize();
 
@@ -289,6 +293,7 @@ public class PathProcedural {
                 points[LoopIndex(controlIndex)] = anchorPos + dir * neighbourDistances[i] * .5f;
             }
         }
+        
     }
 
     void AutoSetStartAndEndControls()

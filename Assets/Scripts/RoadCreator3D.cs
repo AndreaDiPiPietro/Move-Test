@@ -9,20 +9,33 @@ public class RoadCreator3D : MonoBehaviour {
 
     
     private float spacing = 0.05f;
+    private PathProcedural path;
     public float roadWidth = 1;
     public bool autoUpdate;
-    private float tiling = -10;
+    public float tiling = -10;
+    public int textureRepeat;
+    public Material roadMat;
+    public Vector3[] points;
 
+
+    public void Start()
+    {
+        Material copyRoadMat = new Material(roadMat);
+        transform.GetChild(0).GetComponent<MeshRenderer>().sharedMaterial = copyRoadMat;
+        //referenza al path
+        path = GetComponent<PathCreator>().path;
+    }
 
     public void UpdateRoad()
     {
-        PathProcedural path = GetComponent<PathCreator>().path;
-        Vector3[] points = path.CalculateEvenlySpacedPoints(spacing);
+        points = path.CalculateEvenlySpacedPoints(spacing);
+
+
+
+        //Manipolazione e storage della mesh in un altro gameObject figlio della strada
         transform.GetChild(0).GetComponent<MeshFilter>().mesh = CreateRoadMesh(points, path.IsClosed);
-
-
-        int textureRepeat = Mathf.RoundToInt(tiling * points.Length * spacing * .05f);
-        transform.GetChild(0).GetComponent<MeshRenderer>().sharedMaterial.mainTextureScale = new Vector2(1, textureRepeat);
+        textureRepeat = Mathf.RoundToInt(tiling * points.Length * spacing * .05f);
+        transform.GetChild(0).GetComponent<MeshRenderer>().sharedMaterial.mainTextureScale = new Vector2(1,textureRepeat);
     }
 
     Mesh CreateRoadMesh(Vector3[] points, bool isClosed)
