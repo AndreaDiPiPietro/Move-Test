@@ -16,6 +16,9 @@ public class RoadCreator3D : MonoBehaviour {
     public int textureRepeat;
     public Material roadMat;
     public Vector3[] points;
+    public List<int> pointsToDelete;
+    public Mesh roadMesh;
+    public bool isCreated;
 
 
     public void Start()
@@ -24,6 +27,7 @@ public class RoadCreator3D : MonoBehaviour {
         transform.GetChild(0).GetComponent<MeshRenderer>().sharedMaterial = copyRoadMat;
         //referenza al path
         path = GetComponent<PathCreator>().path;
+        pointsToDelete = new List<int>();
     }
 
     public void UpdateRoad()
@@ -33,12 +37,13 @@ public class RoadCreator3D : MonoBehaviour {
 
 
         //Manipolazione e storage della mesh in un altro gameObject figlio della strada
-        transform.GetChild(0).GetComponent<MeshFilter>().mesh = CreateRoadMesh(points, path.IsClosed);
+        roadMesh = CreateRoadMesh(points, path.IsClosed, pointsToDelete);
+        transform.GetChild(0).GetComponent<MeshFilter>().mesh = roadMesh; //Dove sta la mesh
         textureRepeat = Mathf.RoundToInt(tiling * points.Length * spacing * .05f);
         transform.GetChild(0).GetComponent<MeshRenderer>().sharedMaterial.mainTextureScale = new Vector2(1,textureRepeat);
     }
 
-    Mesh CreateRoadMesh(Vector3[] points, bool isClosed)
+    Mesh CreateRoadMesh(Vector3[] points, bool isClosed, List<int> pointsToDelete)
     {
         Vector3[] verts = new Vector3[points.Length * 4];
         Vector2[] uvs = new Vector2[verts.Length];
@@ -77,9 +82,8 @@ public class RoadCreator3D : MonoBehaviour {
             uvs[vertIndex + 2] = new Vector2(0, v);
             uvs[vertIndex + 3] = new Vector2(2f, v);
 
-            if (i < points.Length - 1 || isClosed)
+            if ((i < points.Length - 1 || isClosed) && !pointsToDelete.Contains(i))
             {
-
                 //Top Face//
                 //Top Left
                 tris[triIndex] = vertIndex;
@@ -149,6 +153,7 @@ public class RoadCreator3D : MonoBehaviour {
         road.vertices = verts;
         road.triangles = tris;
         road.uv = uvs;
+        isCreated = true;
 
         return road;
     }

@@ -133,6 +133,9 @@ MonoBehaviour:
   textureRepeat: 0
   roadMat: {fileID: 2100000, guid: dc8d64165905d2c4b866421da7b1e7c2, type: 2}
   points: []
+  pointsToDelete: 
+  roadMesh: {fileID: 0}
+  isCreated: 0
 --- !u!114 &114402996580676880
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -168,6 +171,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 781a926658b529a498d73c76a168fe48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pointsToDelete: 15
+  crossPoints: []
+  spawningCross: {fileID: 0}
   isEditing: 1
   anchorPoint: {fileID: 1718392635877758, guid: 1ff5e0768b43a024bbe26d11cae59180,
     type: 2}

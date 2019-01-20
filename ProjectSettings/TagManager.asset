@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - sferetta
+  - manager
+  - handle
   layers:
   - Default
   - TransparentFX

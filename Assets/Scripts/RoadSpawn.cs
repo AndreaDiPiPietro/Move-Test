@@ -5,6 +5,11 @@ using UnityEngine.UI;
 
 public class RoadSpawn : MonoBehaviour {
 
+    [Header("Settings for crossroads")]
+    public int pointsToDelete;
+    public List<Vector3> crossPoints = new List<Vector3>();
+    public SpawningCross spawningCross;
+
     public bool isEditing = true;
     public GameObject anchorPoint;
     public GameObject ducetto;
@@ -13,11 +18,13 @@ public class RoadSpawn : MonoBehaviour {
     LineRenderer lineRenderer;
     PathCreator pathCreator;
     RoadCreator3D roadCreator;
-    
-    public GameObject snapPoint;
+
+
+    public GameObject snapPoint;            //sferette rosse
     public List<GameObject> snapPointList = new List<GameObject>();
     private float snapSpacing = 1f;
     private BoxCollider bCol;
+
 
 
     private void Start()
@@ -27,6 +34,7 @@ public class RoadSpawn : MonoBehaviour {
         pathCreator = GetComponent<PathCreator>();
         roadCreator = GetComponent<RoadCreator3D>();
         bCol = GetComponent<BoxCollider>();
+        spawningCross = GameObject.FindGameObjectWithTag("manager").GetComponent<SpawningCross>();
         SpawnAnchor();
     }
 
@@ -51,58 +59,88 @@ public class RoadSpawn : MonoBehaviour {
             }
         }
 
-        if (bCol.enabled) 
+        if (bCol.enabled)
             bCol.center = anchorList[0].transform.position;
-        
+
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "sferetta" && anchorList.Count == 1)
+        {
+
+            StartCoroutine(SnapStay(other));
+        }
     }
 
     private void OnTriggerStay(Collider col)
     {
         if (col.gameObject.tag == "sferetta" && anchorList.Count == 1)
         {
+
             var cur = col.gameObject.GetComponentInParent<RoadSpawn>().snapPointList;
-            anchorList[0].transform.position = col.transform.position;
             if (Input.GetMouseButton(0) && (col.gameObject.Equals(cur[0]) || col.gameObject.Equals(cur[cur.Count - 1])))
             {
                 col.gameObject.GetComponentInParent<RoadSpawn>().OnEnableEditing();
 
                 Destroy(this.gameObject);
             }
-            else if (Input.GetMouseButtonDown(0))
-            {
-                float oldDistance = 100;
-                float curDistance = 0;
-                bool foundPoint = false;
-                Vector3[] pointsIntersection = col.gameObject.GetComponentInParent<RoadCreator3D>().points;
-                if (!foundPoint)
-                {
-                    foreach (Vector3 p in pointsIntersection)
-                    {
-                        curDistance = Vector3.Distance(anchorList[0].transform.position, p);
-                        if (curDistance >= oldDistance)
-                        {
-                            //Instantiate(snapPoint, p, Quaternion.identity);
-                            foundPoint = true;
-                            foreach (GameObject g in col.GetComponentInParent<RoadSpawn>().snapPointList)                           
-                                Destroy(g);
-                            
-                            return;
-                        }
-                        else
-                            oldDistance = curDistance;
-                    }
-                }
 
-                
-                
+            
 
-
-            }
-                
         }
 
-    }
 
+
+    }
+    //roadCreator.roadMesh.vertices[((j + 1) * 4) - 1];
+
+
+    public void CrossRoadFinder(GameObject otherRoad, GameObject sferettaDiCollisione)
+    {
+        /*Debug.DrawLine(otherRoad.GetComponent<RoadCreator3D>().roadMesh.vertices[0], 
+            otherRoad.GetComponent<RoadCreator3D>().roadMesh.vertices[otherRoad.GetComponent<RoadCreator3D>().roadMesh.vertices.Length - 1],
+            Color.red, Mathf.Infinity);*/
+        float curDistance = 0;
+        float oldDistance = Mathf.Infinity;
+
+        for (int i = 0; i < roadCreator.points.Length; i++)
+        {
+            curDistance = Vector3.Distance(roadCreator.points[i], sferettaDiCollisione.transform.position);
+            if ((curDistance > oldDistance))
+            {
+                for (int j = i - pointsToDelete; j <= i + pointsToDelete; j++)
+                {
+                    roadCreator.pointsToDelete.Add(j);
+                }
+                if (0 <= (((i - pointsToDelete) + 1) * 4) - 4)
+                {
+                    crossPoints.Add(roadCreator.roadMesh.vertices[(((i - pointsToDelete) + 1) * 4) - 4]);
+                    crossPoints.Add(roadCreator.roadMesh.vertices[(((i - pointsToDelete) + 1) * 4) - 3]);
+                    crossPoints.Add(roadCreator.roadMesh.vertices[(((i - pointsToDelete) + 1) * 4) - 2]);
+                    crossPoints.Add(roadCreator.roadMesh.vertices[(((i - pointsToDelete) + 1) * 4) - 1]);
+                }
+
+                if (roadCreator.roadMesh.vertices.Length > ((((i + pointsToDelete) + 2) * 4) - 1))
+                {
+                    crossPoints.Add(roadCreator.roadMesh.vertices[(((i + pointsToDelete) + 2) * 4) - 4]);
+                    crossPoints.Add(roadCreator.roadMesh.vertices[(((i + pointsToDelete) + 2) * 4) - 3]);
+                    crossPoints.Add(roadCreator.roadMesh.vertices[(((i + pointsToDelete) + 2) * 4) - 2]);
+                    crossPoints.Add(roadCreator.roadMesh.vertices[(((i + pointsToDelete) + 2) * 4) - 1]);
+
+                }
+                break;
+
+            }
+            else
+            {
+                oldDistance = curDistance;
+            }
+        }
+
+        roadCreator.UpdateRoad();
+        spawningCross.CrossroadCreator(this.gameObject);
+    }
 
 
 
@@ -118,6 +156,7 @@ public class RoadSpawn : MonoBehaviour {
 
 
         Vector3[] snapMask = pathCreator.path.CalculateEvenlySpacedPoints(snapSpacing);
+        if (snapPointList.Count > 0) { return; }
         foreach (Vector3 p in snapMask)
             snapPointList.Add(Instantiate(snapPoint, p + new Vector3(0,0.2f,0), Quaternion.identity, transform));
 
@@ -178,6 +217,31 @@ public class RoadSpawn : MonoBehaviour {
             //SpawnAnchor();
             yield return null;
         }
+    }
+
+    IEnumerator SnapStay(Collider col)
+    {
+        while (anchorList[0].GetComponent<DragMovement>().IsDragging)
+        {
+            anchorList[0].transform.position = col.transform.position;
+            RaycastHit hit;
+            Ray raycast = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(raycast, out hit, 100.0f))
+                if (Vector3.Distance(hit.point, col.transform.position) < 1f)
+                {
+                    anchorList[0].GetComponent<DragMovement>().IsSnapping = true;
+                    yield return new WaitForFixedUpdate();
+                }
+                else
+                {
+                    anchorList[0].GetComponent<DragMovement>().IsSnapping = false;
+                    anchorList[0].transform.position = hit.point;
+
+                    break;                
+                }
+            
+        }
+        yield return null;
     }
     
 
