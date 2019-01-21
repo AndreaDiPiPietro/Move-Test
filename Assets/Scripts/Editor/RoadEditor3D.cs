@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(RoadCreator3D))]
+[CustomEditor(typeof(RoadProceduralMeshCreator))]
 public class RoadEditor : Editor
 {
 
-    RoadCreator3D creator;
+    RoadProceduralMeshCreator creator;
 
     private void OnSceneGUI()
     {
@@ -20,6 +20,6 @@ public class RoadEditor : Editor
 
     private void OnEnable()
     {
-        creator = (RoadCreator3D)target;
+        creator = (RoadProceduralMeshCreator)target;
     }
 }

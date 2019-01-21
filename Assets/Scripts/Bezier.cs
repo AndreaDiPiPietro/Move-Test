@@ -14,7 +14,6 @@ public static class Bezier
         Vector3 p0 = Vector3.Lerp(a, b, t);
         Vector3 p1 = Vector3.Lerp(b, c, t);
         return Vector3.Lerp(p0, p1, t);
-        // TODO : Fix high beginning
     }
 
     public static Vector3 EvaluateCubic(Vector3 a, Vector3 b, Vector3 c, Vector3 d, float t)

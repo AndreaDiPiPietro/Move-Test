@@ -16,8 +16,8 @@ public class RoadSpawn : MonoBehaviour {
     public Button roadButton;
     List<GameObject> anchorList;
     LineRenderer lineRenderer;
-    PathCreator pathCreator;
-    RoadCreator3D roadCreator;
+    PathCreatorAndSettings pathCreator;
+    RoadProceduralMeshCreator roadCreator;
 
 
     public GameObject snapPoint;            //sferette rosse
@@ -31,8 +31,8 @@ public class RoadSpawn : MonoBehaviour {
     {
         anchorList = new List<GameObject>();
         lineRenderer = GetComponent<LineRenderer>();
-        pathCreator = GetComponent<PathCreator>();
-        roadCreator = GetComponent<RoadCreator3D>();
+        pathCreator = GetComponent<PathCreatorAndSettings>();
+        roadCreator = GetComponent<RoadProceduralMeshCreator>();
         bCol = GetComponent<BoxCollider>();
         spawningCross = GameObject.FindGameObjectWithTag("manager").GetComponent<SpawningCross>();
         SpawnAnchor();
@@ -98,8 +98,8 @@ public class RoadSpawn : MonoBehaviour {
 
     public void CrossRoadFinder(GameObject otherRoad, GameObject sferettaDiCollisione)
     {
-        /*Debug.DrawLine(otherRoad.GetComponent<RoadCreator3D>().roadMesh.vertices[0], 
-            otherRoad.GetComponent<RoadCreator3D>().roadMesh.vertices[otherRoad.GetComponent<RoadCreator3D>().roadMesh.vertices.Length - 1],
+        /*Debug.DrawLine(otherRoad.GetComponent<RoadProceduralMeshCreator>().roadMesh.vertices[0], 
+            otherRoad.GetComponent<RoadProceduralMeshCreator>().roadMesh.vertices[otherRoad.GetComponent<RoadProceduralMeshCreator>().roadMesh.vertices.Length - 1],
             Color.red, Mathf.Infinity);*/
         float curDistance = 0;
         float oldDistance = Mathf.Infinity;

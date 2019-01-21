@@ -7,10 +7,13 @@ public class IsCollidingScript : MonoBehaviour {
     public bool isColliding = false;
     public GameObject otherRoadRef;
 
+    public GameObject otherSphere;
+
     private void OnTriggerEnter(Collider col)
     {
         if(col.gameObject.tag == "sferetta")
         {
+            otherSphere = col.gameObject;
             isColliding = true;
             otherRoadRef = col.gameObject.transform.parent.gameObject;
             otherRoadRef.GetComponentInParent<RoadSpawn>().CrossRoadFinder(otherRoadRef, this.gameObject);

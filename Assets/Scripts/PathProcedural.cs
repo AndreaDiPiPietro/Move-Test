@@ -12,18 +12,13 @@ public class PathProcedural {
     [SerializeField, HideInInspector]
     bool autoSetControlPoints = true;
 
-    PathCreator creator;
+    PathCreatorAndSettings creator;
 
     public PathProcedural(Vector3 centre)
     {
         points = new List<Vector3>
         {
-            /*centre+Vector3.left,
-            centre+(Vector3.left+Vector3.forward)*.5f,
-            centre + (Vector3.right+Vector3.back)*.5f,
-            centre + Vector3.right*/
-            centre
-            
+            centre          
         };
     }
 

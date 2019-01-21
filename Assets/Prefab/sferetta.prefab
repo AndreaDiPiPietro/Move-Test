@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 135194284136287194}
   - component: {fileID: 54347892448280610}
   - component: {fileID: 114202081994375548}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: sferetta
   m_TagString: sferetta
   m_Icon: {fileID: 0}
@@ -114,6 +114,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isColliding: 0
   otherRoadRef: {fileID: 0}
+  otherSphere: {fileID: 0}
 --- !u!135 &135194284136287194
 SphereCollider:
   m_ObjectHideFlags: 1

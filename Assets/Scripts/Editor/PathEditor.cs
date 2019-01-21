@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(PathCreator))]
+[CustomEditor(typeof(PathCreatorAndSettings))]
 public class PathEditor : Editor {
 
     //for displaying and editing the path
 
-    PathCreator creator;
+    PathCreatorAndSettings creator;
     PathProcedural Path
     {
         get
@@ -23,7 +23,7 @@ public class PathEditor : Editor {
     private void OnEnable() // quando l'editor viene abilitato
     {
 
-        creator = (PathCreator)target;
+        creator = (PathCreatorAndSettings)target;
         if (creator.path == null) // se non c'è nessun path
         {
             creator.CreatePath(Vector3.zero); //crea un nuovo path  CAMBIATO////////////////////////////////////////////////////////////////
@@ -174,7 +174,7 @@ public class PathEditor : Editor {
 
     /*private void OnEnable() // quando l'editor viene abilitato
     {
-        creator = (PathCreator)target;
+        creator = (PathCreatorAndSettings)target;
         if (creator.path == null) // se non c'è nessun path
         {
             creator.CreatePath(Vector3.zero); //crea un nuovo path  CAMBIATO////////////////////////////////////////////////////////////////

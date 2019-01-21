@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PathCreator : MonoBehaviour {
+public class PathCreatorAndSettings : MonoBehaviour {
     //for creating and holding a reference of the path
 
         [HideInInspector]
     public PathProcedural path;
     //public PlaymodeEditor playmode 
-
+    
     public Color anchorCol = Color.red;
     public Color controlCol = Color.white;
     public Color segmentCol = Color.green;

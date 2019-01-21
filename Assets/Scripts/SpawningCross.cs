@@ -21,19 +21,6 @@ public class SpawningCross : MonoBehaviour {
     int[] tris = new int[32 * 3];
     Vector2[] uvs = new Vector2[32];
 
-    //per il texturing
-    int textureWidth = 300;
-    int textureHeight = 300;
-    int horizontalCrosswalkx = 0;
-    int horizontalCrosswalky = 0;
-    int horizontalCrosswalkw = 50;
-    int horizontalCrosswalkh = 215;
-
-    int verticalCrosswalkx = 0;
-    int verticalCrosswalky = 250;
-    int verticalCrosswalkw = 220;
-    int verticalCrosswalkh = 50;
-
     private void Start()
     {
         meshFilterBody = crossRoadBody.GetComponent<MeshFilter>();
@@ -61,7 +48,6 @@ public class SpawningCross : MonoBehaviour {
             foreach (Vector3 v in secondCrossPoints)
             {
                 allCrossPoints.Add(v);
-                Debug.Log("chiamato");
             }
 
             //calcoliamo il rientro dalla strada
@@ -129,10 +115,10 @@ public class SpawningCross : MonoBehaviour {
            allCrossPoints[15].y + ((allCrossPoints[11].y - allCrossPoints[15].y) * incavoIncrocio),
            allCrossPoints[15].z + ((allCrossPoints[11].z - allCrossPoints[15].z) * incavoIncrocio)));
 
-            foreach(Vector3 v in allCrossPoints)
+            /*foreach(Vector3 v in allCrossPoints)
             {
                 Instantiate(ducetto, v, Quaternion.identity);
-            }
+            }*/
 
             allCrossPointsArray = allCrossPoints.ToArray();
             meshFilterCrossWalk.mesh = BuildCrosswalk(allCrossPointsArray);
@@ -148,14 +134,9 @@ public class SpawningCross : MonoBehaviour {
         }
     }
 
-    public Vector2 ConvertPixelToUVCoordinates(int x, int y, int textureWidth, int textureHeight)
-    {
-        return new Vector2((x / textureWidth), (y / textureHeight));
-    }
-
     Mesh BuildCrosswalk(Vector3[] allCrossPoints)
     {
-        var mo = 0;
+        var incrementoPunti = 0;
 
         for (int i = 0; i < 4; i++)
         {
@@ -163,74 +144,90 @@ public class SpawningCross : MonoBehaviour {
             {
                 //top face
                 //top left
-                trisCrosswalk[0 + mo] = (pointsIndex);
-                trisCrosswalk[1 + mo] = (pointsIndex + 16);
-                trisCrosswalk[2 + mo] = (pointsIndex + 1);
+                trisCrosswalk[0 + incrementoPunti] = (pointsIndex);
+                trisCrosswalk[1 + incrementoPunti] = (pointsIndex + 16);
+                trisCrosswalk[2 + incrementoPunti] = (pointsIndex + 1);
                 //top right
-                trisCrosswalk[3 + mo] = (pointsIndex + 1);
-                trisCrosswalk[4 + mo] = (pointsIndex + 16);
-                trisCrosswalk[5 + mo] = (pointsIndex + 17);
+                trisCrosswalk[3 + incrementoPunti] = (pointsIndex + 1);
+                trisCrosswalk[4 + incrementoPunti] = (pointsIndex + 16);
+                trisCrosswalk[5 + incrementoPunti] = (pointsIndex + 17);
                 //left face
                 //left left
-                trisCrosswalk[6 + mo] = (pointsIndex + 2);
-                trisCrosswalk[7 + mo] = (pointsIndex + 18);
-                trisCrosswalk[8 + mo] = (pointsIndex + 16);
+                trisCrosswalk[6 + incrementoPunti] = (pointsIndex + 2);
+                trisCrosswalk[7 + incrementoPunti] = (pointsIndex + 18);
+                trisCrosswalk[8 + incrementoPunti] = (pointsIndex + 16);
                 //left right
-                trisCrosswalk[9 + mo] = (pointsIndex + 2);
-                trisCrosswalk[10 + mo] = (pointsIndex + 16);
-                trisCrosswalk[11 + mo] = (pointsIndex);
+                trisCrosswalk[9 + incrementoPunti] = (pointsIndex + 2);
+                trisCrosswalk[10 + incrementoPunti] = (pointsIndex + 16);
+                trisCrosswalk[11 + incrementoPunti] = (pointsIndex);
                 //right face
                 //right left
-                trisCrosswalk[12 + mo] = (pointsIndex + 1);
-                trisCrosswalk[13 + mo] = (pointsIndex + 19);
-                trisCrosswalk[14 + mo] = (pointsIndex + 3);
+                trisCrosswalk[12 + incrementoPunti] = (pointsIndex + 1);
+                trisCrosswalk[13 + incrementoPunti] = (pointsIndex + 19);
+                trisCrosswalk[14 + incrementoPunti] = (pointsIndex + 3);
                 //right right
-                trisCrosswalk[15 + mo] = (pointsIndex + 1);
-                trisCrosswalk[16 + mo] = (pointsIndex + 17);
-                trisCrosswalk[17 + mo] = (pointsIndex + 19);
+                trisCrosswalk[15 + incrementoPunti] = (pointsIndex + 1);
+                trisCrosswalk[16 + incrementoPunti] = (pointsIndex + 17);
+                trisCrosswalk[17 + incrementoPunti] = (pointsIndex + 19);
             }
             else
             {
                 //top face
                 //top left
-                trisCrosswalk[0 + mo] = (pointsIndex);
-                trisCrosswalk[1 + mo] = (pointsIndex + 1);
-                trisCrosswalk[2 + mo] = (pointsIndex + 16);
+                trisCrosswalk[0 + incrementoPunti] = (pointsIndex);
+                trisCrosswalk[1 + incrementoPunti] = (pointsIndex + 1);
+                trisCrosswalk[2 + incrementoPunti] = (pointsIndex + 16);
                 //top right
-                trisCrosswalk[3 + mo] = (pointsIndex + 1);
-                trisCrosswalk[4 + mo] = (pointsIndex + 17);
-                trisCrosswalk[5 + mo] = (pointsIndex + 16);
+                trisCrosswalk[3 + incrementoPunti] = (pointsIndex + 1);
+                trisCrosswalk[4 + incrementoPunti] = (pointsIndex + 17);
+                trisCrosswalk[5 + incrementoPunti] = (pointsIndex + 16);
                 //left face
                 //left left
-                trisCrosswalk[6 + mo] = (pointsIndex + 2);
-                trisCrosswalk[7 + mo] = (pointsIndex + 16);
-                trisCrosswalk[8 + mo] = (pointsIndex + 18);
+                trisCrosswalk[6 + incrementoPunti] = (pointsIndex + 2);
+                trisCrosswalk[7 + incrementoPunti] = (pointsIndex + 16);
+                trisCrosswalk[8 + incrementoPunti] = (pointsIndex + 18);
                 //left right
-                trisCrosswalk[9 + mo] = (pointsIndex + 2);
-                trisCrosswalk[10 + mo] = (pointsIndex);
-                trisCrosswalk[11 + mo] = (pointsIndex + 16);
+                trisCrosswalk[9 + incrementoPunti] = (pointsIndex + 2);
+                trisCrosswalk[10 + incrementoPunti] = (pointsIndex);
+                trisCrosswalk[11 + incrementoPunti] = (pointsIndex + 16);
                 //right face
                 //right left
-                trisCrosswalk[12 + mo] = (pointsIndex + 1);
-                trisCrosswalk[13 + mo] = (pointsIndex + 3);
-                trisCrosswalk[14 + mo] = (pointsIndex + 19);
+                trisCrosswalk[12 + incrementoPunti] = (pointsIndex + 1);
+                trisCrosswalk[13 + incrementoPunti] = (pointsIndex + 3);
+                trisCrosswalk[14 + incrementoPunti] = (pointsIndex + 19);
                 //right right
-                trisCrosswalk[15 + mo] = (pointsIndex + 1);
-                trisCrosswalk[16 + mo] = (pointsIndex + 19);
-                trisCrosswalk[17 + mo] = (pointsIndex + 17);
+                trisCrosswalk[15 + incrementoPunti] = (pointsIndex + 1);
+                trisCrosswalk[16 + incrementoPunti] = (pointsIndex + 19);
+                trisCrosswalk[17 + incrementoPunti] = (pointsIndex + 17);
             }
 
-            mo += 18;
+            incrementoPunti += 18;
             pointsIndex += 4;
         }
         for (int i=0; i<allCrossPoints.Length; i++)
             uvs[i] = new Vector2(Mathf.Abs(allCrossPoints[i].x), Mathf.Abs(allCrossPoints[i].z));
 
         //crosswalk orizzontale
-        uvs[0] = new Vector2(0, 0);
-        uvs[1] = new Vector2(1, 0);
-        uvs[5] = new Vector2(0, 1);
-        uvs[4] = new Vector2(1, 1);
+        uvs[0] = new Vector2(0, 0.83f);
+        uvs[0 + 16] = new Vector2(0, 1f);
+        uvs[1] = new Vector2(0.73f, 0.83f);
+        uvs[1 + 16] = new Vector2(0.73f, 1);
+
+        uvs[4] = new Vector2(0, 0.83f);
+        uvs[4 + 16] = new Vector2(0, 1);
+        uvs[5] = new Vector2(0.73f, 0.83f);
+        uvs[5 + 16] = new Vector2(0.73f, 1);
+
+        //crosswalk verticale
+        uvs[12] = new Vector2(0, 0);
+        uvs[12 + 16] = new Vector2(0.16f, 0);
+        uvs[13] = new Vector2(0, 0.71f);
+        uvs[13 + 16] = new Vector2(0.16f, 0.71f);
+
+        uvs[8] = new Vector2(0, 0);
+        uvs[8 + 16] = new Vector2(0.16f, 0);
+        uvs[9] = new Vector2(0, 0.71f);
+        uvs[9 + 16] = new Vector2(0.16f, 0.71f);
 
         pointsIndex = 0;
         Mesh buildCrosswalk = new Mesh();
@@ -372,14 +369,10 @@ public class SpawningCross : MonoBehaviour {
             tris[40] = (pointsIndex + 15 + 16);
             tris[41] = (pointsIndex + 3 + 16);
         }
+
         for (int i = 0; i < allCrossPoints.Length; i++)
             uvs[i] = new Vector2(Mathf.Abs(allCrossPoints[i].x), Mathf.Abs(allCrossPoints[i].z));
 
-        //crosswalk orizzontale
-        uvs[0] = new Vector2(0, 0);
-        uvs[1] = new Vector2(1, 0);
-        uvs[5] = new Vector2(0, 1);
-        uvs[4] = new Vector2(1, 1);
         Mesh buildCrossRoadBody = new Mesh();
         buildCrossRoadBody.vertices = allCrossPoints;
         buildCrossRoadBody.triangles = tris;

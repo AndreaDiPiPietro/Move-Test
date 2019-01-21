@@ -2,23 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(PathCreator))]
+[RequireComponent(typeof(PathCreatorAndSettings))]
 //[RequireComponent(typeof(MeshFilter))]
 //[RequireComponent(typeof(MeshRenderer))]
-public class RoadCreator3D : MonoBehaviour {
+public class RoadProceduralMeshCreator : MonoBehaviour {
 
     
     private float spacing = 0.05f;
+
     private PathProcedural path;
-    public float roadWidth = 1;
-    public bool autoUpdate;
-    public float tiling = -10;
+
     public int textureRepeat;
+
+    public float roadWidth = 1;
+    public float tiling = -10;
+
+    public bool isCreated;
+    public bool autoUpdate;
+
     public Material roadMat;
+    public Mesh roadMesh;
+
     public Vector3[] points;
     public List<int> pointsToDelete;
-    public Mesh roadMesh;
-    public bool isCreated;
+
+
 
 
     public void Start()
@@ -26,15 +34,13 @@ public class RoadCreator3D : MonoBehaviour {
         Material copyRoadMat = new Material(roadMat);
         transform.GetChild(0).GetComponent<MeshRenderer>().sharedMaterial = copyRoadMat;
         //referenza al path
-        path = GetComponent<PathCreator>().path;
+        path = GetComponent<PathCreatorAndSettings>().path;
         pointsToDelete = new List<int>();
     }
 
     public void UpdateRoad()
     {
         points = path.CalculateEvenlySpacedPoints(spacing);
-
-
 
         //Manipolazione e storage della mesh in un altro gameObject figlio della strada
         roadMesh = CreateRoadMesh(points, path.IsClosed, pointsToDelete);
@@ -56,14 +62,12 @@ public class RoadCreator3D : MonoBehaviour {
         {
             Vector3 forward = Vector3.zero; //inizializziamo il vettore forward come vettore vuoto. Ci serve a capire la direzione della strada
 
-            if (i < points.Length - 1 || isClosed)
-            {
+            if (i < points.Length - 1 || isClosed)           
                 forward += points[(i + 1) % points.Length] - points[i];   // se ci troviamo nel mezzo della strada, forward viene aumentato della direzione del prossimo punto
-            }
-            if (i > 0 || isClosed)
-            {
+            
+            if (i > 0 || isClosed)           
                 forward += points[i] - points[(i - 1 + points.Length) % points.Length];
-            }
+            
             forward.Normalize();
 
             Vector3 left = new Vector3(-forward.z, points[i].y, forward.x); // vettore per la direzione a sinistra
