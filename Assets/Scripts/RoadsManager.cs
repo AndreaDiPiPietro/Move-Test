@@ -2,17 +2,28 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RoadsManager : MonoBehaviour {
+public class RoadsManager : MonoBehaviour
+{
 
     public GameObject road;
+    public GameObject sferettablu;
+
+
     Dictionary<GameObject, bool> roads = new Dictionary<GameObject, bool>();
     GameObject toRemove;
+
+
+    int lenghtCurStreet;
+    Vector3[] curArray;
+    List<Vector3> curList = new List<Vector3>();
+    List<List<Vector3>> listOfStreets = new List<List<Vector3>>();
+    List<Vector3> curStreet = new List<Vector3>();
 
     List<NodeStreet> nodes = new List<NodeStreet>();
 
     public void SpawnRoad()
     {
-        roads.Add(Instantiate(road), true);     
+        roads.Add(Instantiate(road), true);
     }
 
     public void Update()
@@ -29,61 +40,93 @@ public class RoadsManager : MonoBehaviour {
         }
     }
 
-    public void CompleteNetwork()
+    public void CreateNavMeshPoints()
     {
-        int i = 0;
-        int h = 0;
-        foreach(GameObject g in roads.Keys)
+        listOfStreets = new List<List<Vector3>>();
+        curStreet = new List<Vector3>();
+        foreach (GameObject road in roads.Keys)
         {
-            var snapList = g.GetComponent<RoadSpawn>().snapPointList;
-            for (int n = 0; n < snapList.Count; n++)
+            var wayPoints = road.GetComponent<RoadSpawn>().snapPointList;
+            for (int snap = 0; snap < wayPoints.Count; snap++)
             {
-
-                var pos = snapList[n].transform.position;
-                var curNode = new NodeStreet(pos);
-
-                // Checking for crosses
-                var cols = Physics.OverlapSphere(pos, 2, LayerMask.GetMask("sferetta"));
-                foreach(Collider c in cols)
+                if (wayPoints[snap].GetComponent<IsCollidingScript>().isColliding)
                 {
-                    c.gameObject.transform.position += Vector3.up * 3;
+
+                    FinishCurStreet();
+
                 }
-
-
-
-
-
-
-
-
-
-                //// street to go straight
-                //curNode.AddStreet(new ArcStreet(pos, snapList[n + 1].transform.position));
-
-
-                //// if colliding then streets to left and right
-                //if (snapList[n].GetComponent<IsCollidingScript>().isColliding)
-                //{
-                //    snapList[n].transform.position += Vector3.up * 3;
-
-                //    foreach (GameObject snapPoint in snapList[n].GetComponent<IsCollidingScript>().otherSphere.GetComponentInParent<RoadSpawn>().snapPointList)
-                //    {
-                //        var totalLenght = snapList[n].GetComponent<IsCollidingScript>().otherSphere.GetComponentInParent<RoadSpawn>().snapPointList.Count;
-                //        if (snapPoint.GetComponent<IsCollidingScript>().isColliding)
-                //            return;
-
-                //        else
-                //            h++;
-                //    }
-
-
-                //}
-
-
-
-
+                else
+                {
+                    if (snap + 1 < wayPoints.Count)
+                    {
+                        Vector3 forward = wayPoints[snap + 1].transform.position - wayPoints[snap].transform.position;
+                        Vector3 left = new Vector3(-forward.z,0, forward.x);
+                        curStreet.Add(wayPoints[snap].transform.position - left.normalized/2);
+                    }
+                    else
+                    {
+                        Vector3 forward = wayPoints[snap].transform.position - wayPoints[snap-1].transform.position;
+                        Vector3 left = new Vector3(-forward.z,0, forward.x);
+                        curStreet.Add(wayPoints[snap].transform.position - left.normalized/2);
+                    }
+                }
             }
-               
+            FinishCurStreet();
         }
     }
-}
+
+
+    public void FinishCurStreet()
+    {
+        var wayPoints = road.GetComponent<RoadSpawn>().snapPointList;
+        lenghtCurStreet = curStreet.Count;
+        for (int i = lenghtCurStreet - 1; i >= 0; i--)
+        {
+            curStreet.Add(curStreet[i]);
+        }
+        for (int i = lenghtCurStreet; i < curStreet.Count; i++)
+        {
+            if (i + 1 < curStreet.Count)
+            {
+                Vector3 forward = curStreet[i + 1] - curStreet[i];
+                Vector3 left = new Vector3(-forward.z, 0, forward.x);
+                curStreet[i] = curStreet[i] - left.normalized;
+            }
+            else
+            {
+                Vector3 forward = curStreet[i - 1] - curStreet[i - 2];
+                Vector3 left = new Vector3(-forward.z, 0, forward.x);
+                Debug.DrawLine(curStreet[i], curStreet[i] - left.normalized, Color.red, Mathf.Infinity);
+                curStreet[i] = curStreet[i] - left.normalized;
+            }
+        }
+
+        foreach (Vector3 v in curStreet)
+        {
+            Instantiate(sferettablu, v, Quaternion.identity);
+        }
+        curArray = new Vector3[curStreet.Count];
+        curStreet.CopyTo(curArray);
+        curList = new List<Vector3>();
+        foreach (Vector3 v in curArray)
+        {
+            curList.Add(v);
+        }
+        listOfStreets.Add(curList);
+        Debug.Log(listOfStreets[0].Count);
+        curStreet.Clear();
+        Debug.Log(listOfStreets[0].Count);
+    }
+
+
+
+
+
+    public void CompleteNetwork()
+    {
+        CreateNavMeshPoints();
+    }
+}      
+        
+    
+

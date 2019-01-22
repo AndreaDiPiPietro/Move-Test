@@ -474,6 +474,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   road: {fileID: 1815320400875400, guid: aa052e1695d142245a568f5fed1bb42d, type: 2}
+  sferettablu: {fileID: 1885658119120926, guid: da6b0056c75bc534db2d6da74b71f8da,
+    type: 2}
 --- !u!114 &1252726644
 MonoBehaviour:
   m_ObjectHideFlags: 0
